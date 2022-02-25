@@ -1,14 +1,22 @@
 import React, {  useState } from 'react';
 import { nanoid } from 'nanoid'
 import { FormContainer,Label,FormButton,FormInput } from './Form.styled';
+import { useDispatch } from 'react-redux';
+import {addContacts}   from '../../redux/contactsSlice';
+import  toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { itemSelector } from 'redux/contacts-selectors';
 
 
-export default function Form ({submitForm}){
+export default function Form (){
+  const dispatch = useDispatch();
+  const contacts=useSelector(itemSelector)
   const [name,setName]=useState("");
   const [number,setNumber]=useState("")
 
  const nameInputId = nanoid();
   const  numberInputId = nanoid();
+  const id = nanoid();
 
  const handleChange = event => {
   const { name, value } = event.target;
@@ -31,11 +39,14 @@ export default function Form ({submitForm}){
 
 const handleSubmit = event => {
   event.preventDefault();
-  submitForm({name,number});
+  contacts.find(contact=>contact.name===name)
+   ? toast.error(`${name} is already in contact`)      
+  :dispatch(addContacts({id,name,number}));
   reset();
   console.log(name, number);
 
 };
+
 
 
 const reset=()=> {
